@@ -1,0 +1,26 @@
+---
+# This is the start of the Ansible playbook
+
+- name: Install and Start Nginx        # Name of the play (description of what this playbook does)
+
+  hosts: web                          # Target host group from inventory.ini
+                                      # In your inventory we defined [web]
+
+  become: yes                         # Run tasks with sudo/root privileges
+
+  tasks:                              # List of tasks to execute on the managed node
+
+    - name: Update apt cache          # Task description (for readability in logs)
+      apt:                            # Using the apt module (used for package management in Ubuntu/Debian)
+        update_cache: yes             # Updates the package repository list (similar to `apt update`)
+
+    - name: Install nginx             # Task to install nginx web server
+      apt:                            # Using apt module again
+        name: nginx                   # Name of the package to install
+        state: present                # Ensure the package is installed (idempotent)
+
+    - name: Start nginx service       # Task to start nginx
+      service:                        # Using service module to manage system services
+        name: nginx                   # Service name
+        state: started                # Ensure nginx service is running
+        enabled: yes                  # Enable nginx to start automatically at system boot

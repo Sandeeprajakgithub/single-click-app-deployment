@@ -1,0 +1,45 @@
+---
+# Deploy React Calculator App using Docker
+
+- name: Deploy React Calculator App
+  hosts: web
+  become: yes
+
+  tasks:
+
+    # Update package list
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    # Install Docker and Git
+    - name: Install Docker and Git
+      apt:
+        name:
+          - docker.io
+          - git
+        state: present
+
+    # Start Docker service
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    # Clone your GitHub repo
+    - name: Clone calculator repo
+      git:
+        repo: https://github.com/Sandeeprajakgithub/react-calculator-docker.git
+        dest: /home/ubuntu/calculator-app
+
+    # Build Docker image
+    - name: Build Docker image
+      command: docker build -t calculator-app .
+      args:
+        chdir: /home/ubuntu/calculator-app
+
+    # Run Docker container
+    - name: Run container
+      command: docker run -d -p 80:80 --name calculator calculator-app
+      ignore_errors: yes
